@@ -1,0 +1,178 @@
+/* ═══════════════════════════════════════════════
+   Virtual Steering — Complete Design System
+   ═══════════════════════════════════════════════ */
+:root {
+  --bg:        #07060f;
+  --bg-panel:  rgba(8,6,18,0.88);
+  --accent:    #00c8ff;
+  --red:       #ff3344;
+  --green:     #00e878;
+  --yellow:    #ffd600;
+  --white:     #e8e8f0;
+  --dim:       #5a5a72;
+  --border:    rgba(0,200,255,0.18);
+  --glow-c:    0 0 12px rgba(0,200,255,0.5);
+  --glow-r:    0 0 12px rgba(255,51,68,0.5);
+  --glow-g:    0 0 12px rgba(0,232,120,0.5);
+  --font-hud:  'Orbitron', monospace;
+  --font-ui:   'Rajdhani', sans-serif;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html,body { width:100%; height:100%; overflow:hidden; background:var(--bg);
+            font-family:var(--font-ui); color:var(--white); -webkit-font-smoothing:antialiased; }
+.hidden { display:none !important; }
+
+/* ── LOADER ── */
+.loader { position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+          background:radial-gradient(ellipse at center,#0d0b1a 0%,#07060f 70%);
+          z-index:1000; transition:opacity .6s; }
+.loader-content { display:flex; flex-direction:column; align-items:center; gap:18px; }
+.loader-wheel svg { filter:drop-shadow(var(--glow-c)); }
+.spin-arc { transform-origin:60px 60px; animation:spin 1.4s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loader-title { font-family:var(--font-hud); font-size:clamp(1.2rem,3vw,2rem);
+                font-weight:900; letter-spacing:.3em; color:var(--accent);
+                text-shadow:var(--glow-c); }
+.loader-status { font-size:.85rem; color:var(--dim); letter-spacing:.1em; }
+.loader-bar { width:240px; height:3px; background:rgba(255,255,255,.08);
+              border-radius:2px; overflow:hidden; }
+.loader-fill { height:100%; width:0%; background:var(--accent);
+               box-shadow:var(--glow-c); transition:width .4s ease; }
+
+/* ═══════════════════════════════════════════════
+   SPLIT LAYOUT
+   ═══════════════════════════════════════════════ */
+.app { position:fixed; inset:0; display:flex; flex-direction:row; }
+
+/* ── LEFT: Camera Panel (40%) ── */
+.cam-panel {
+  position:relative; flex:0 0 40%; min-width:300px;
+  overflow:hidden; background:#000;
+  border-right:1px solid var(--border);
+}
+
+#webcam {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; transform:scaleX(-1);
+}
+
+#hud {
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none;
+}
+
+/* Gesture badge */
+.gesture-badge {
+  position:absolute; bottom:100px; left:50%; transform:translateX(-50%);
+  font-family:var(--font-hud); font-size:.68rem; letter-spacing:.15em;
+  padding:7px 20px; border-radius:20px;
+  background:var(--bg-panel); border:1px solid var(--border);
+  color:var(--dim); z-index:10; white-space:nowrap;
+  transition:all .15s ease;
+}
+.gesture-badge.fist  { color:var(--green);  border-color:rgba(0,232,120,.4);  box-shadow:var(--glow-g); }
+.gesture-badge.open  { color:var(--red);    border-color:rgba(255,51,68,.4);   box-shadow:var(--glow-r); }
+.gesture-badge.steer { color:var(--accent); border-color:rgba(0,200,255,.4);  box-shadow:var(--glow-c); }
+
+/* Telemetry strip */
+.telem-row {
+  position:absolute; bottom:0; left:0; right:0; height:60px;
+  display:flex; align-items:center; justify-content:space-around;
+  background:linear-gradient(0deg,rgba(7,6,15,.97),rgba(7,6,15,0));
+  border-top:1px solid var(--border); z-index:10;
+}
+.telem-item { display:flex; flex-direction:column; align-items:center; gap:1px; }
+.telem-label { font-family:var(--font-hud); font-size:.45rem; letter-spacing:.18em; color:var(--dim); }
+.telem-value { font-family:var(--font-hud); font-size:1rem; font-weight:700; color:var(--white); }
+.telem-value.accent { color:var(--accent); }
+.telem-value.green  { color:var(--green);  }
+.telem-value.red    { color:var(--red);    }
+
+/* Key indicators */
+.key-row {
+  position:absolute; bottom:66px; left:50%; transform:translateX(-50%);
+  display:flex; gap:5px; z-index:10;
+}
+.key-btn {
+  font-family:var(--font-hud); font-size:.55rem; letter-spacing:.08em;
+  padding:5px 10px; border-radius:5px;
+  background:rgba(8,6,18,.8); border:1px solid var(--dim);
+  color:var(--dim); transition:all .08s; user-select:none;
+}
+.key-btn.active       { color:var(--accent); border-color:var(--accent); background:rgba(0,200,255,.12); box-shadow:var(--glow-c); }
+.key-btn.active-green { color:var(--green);  border-color:var(--green);  background:rgba(0,232,120,.12); box-shadow:var(--glow-g); }
+.key-btn.active-red   { color:var(--red);    border-color:var(--red);    background:rgba(255,51,68,.12);  box-shadow:var(--glow-r); }
+
+/* Settings button */
+.cam-settings-btn {
+  position:absolute; top:10px; right:10px;
+  background:var(--bg-panel); border:1px solid var(--border);
+  color:var(--dim); width:34px; height:34px; border-radius:8px;
+  cursor:pointer; font-size:.95rem; z-index:20;
+  display:flex; align-items:center; justify-content:center;
+  transition:color .2s, border-color .2s;
+}
+.cam-settings-btn:hover { color:var(--accent); border-color:var(--accent); }
+
+/* Settings panel */
+.settings-panel {
+  position:absolute; top:50px; right:8px; width:220px;
+  background:rgba(10,8,22,.97); border:1px solid var(--border);
+  border-radius:10px; padding:16px; z-index:50;
+  backdrop-filter:blur(16px); box-shadow:0 8px 40px rgba(0,0,0,.6);
+}
+.settings-panel h3 { font-family:var(--font-hud); font-size:.72rem; letter-spacing:.2em;
+                      color:var(--accent); margin-bottom:14px; }
+.settings-panel label { display:flex; flex-direction:column; gap:5px; font-size:.78rem;
+                         color:var(--dim); margin-bottom:12px; }
+.settings-panel input[type=range] { width:100%; accent-color:var(--accent); }
+.settings-panel select { width:100%; background:var(--bg); border:1px solid var(--border);
+                          color:var(--white); padding:5px 7px; border-radius:5px; font-family:var(--font-ui); }
+.settings-panel button { width:100%; padding:7px; background:transparent;
+                          border:1px solid var(--border); color:var(--dim);
+                          border-radius:5px; cursor:pointer; font-family:var(--font-hud);
+                          font-size:.65rem; letter-spacing:.1em; transition:all .2s; }
+.settings-panel button:hover { color:var(--accent); border-color:var(--accent); }
+
+/* ── RIGHT: Game Panel (60%) ── */
+.game-panel {
+  position:relative; flex:1; overflow:hidden;
+  background:#07060f;
+  display:flex; flex-direction:column;
+}
+
+#game {
+  position:absolute; inset:0; width:100%; height:100%;
+  display:block;
+}
+
+/* Game header overlay */
+.game-header {
+  position:absolute; top:0; left:0; right:0; height:48px;
+  display:flex; align-items:center; gap:16px; padding:0 16px;
+  background:linear-gradient(180deg,rgba(7,6,15,.95),rgba(7,6,15,0));
+  border-bottom:1px solid var(--border); z-index:10;
+}
+.game-title { font-family:var(--font-hud); font-size:.85rem; font-weight:700;
+              letter-spacing:.2em; color:var(--accent); }
+.game-stat { font-family:var(--font-hud); font-size:.72rem; letter-spacing:.1em; color:var(--dim); }
+.game-stat.accent { color:var(--accent); }
+.game-stat.red    { color:var(--red); letter-spacing:.3em; }
+
+/* Game hint bar */
+.game-hint {
+  position:absolute; bottom:0; left:0; right:0; height:36px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.7rem; color:var(--dim); letter-spacing:.06em;
+  background:linear-gradient(0deg,rgba(7,6,15,.9),rgba(7,6,15,0));
+  border-top:1px solid rgba(255,255,255,.04); z-index:10; pointer-events:none;
+}
+
+/* ── Responsive: stack on mobile ── */
+@media (max-width:700px) {
+  .app { flex-direction:column; }
+  .cam-panel { flex:0 0 45%; border-right:none; border-bottom:1px solid var(--border); }
+  .game-panel { flex:1; }
+  .key-btn { padding:4px 7px; font-size:.5rem; }
+}

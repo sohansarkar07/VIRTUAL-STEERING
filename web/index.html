@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtual Steering — Hand Gesture Racing</title>
+  <meta name="description" content="Control a racing game with hand gestures using AI. No hardware needed." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="loader" class="loader">
+    <div class="loader-content">
+      <div class="loader-wheel">
+        <svg viewBox="0 0 120 120" width="110" height="110">
+          <circle cx="60" cy="60" r="50" stroke="#00c8ff" stroke-width="4" fill="none" opacity="0.2"/>
+          <circle cx="60" cy="60" r="50" stroke="#00c8ff" stroke-width="4" fill="none"
+            stroke-dasharray="314" stroke-dashoffset="200" class="spin-arc"/>
+          <circle cx="60" cy="60" r="12" fill="#0a0a14" stroke="#00c8ff" stroke-width="2"/>
+          <line x1="60" y1="48" x2="60" y2="10"  stroke="#00c8ff" stroke-width="3" stroke-linecap="round"/>
+          <line x1="60" y1="48" x2="95" y2="72"  stroke="#00c8ff" stroke-width="3" stroke-linecap="round"/>
+          <line x1="60" y1="48" x2="25" y2="72"  stroke="#00c8ff" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 class="loader-title">VIRTUAL STEERING</h1>
+      <p id="loader-status" class="loader-status">Loading AI model…</p>
+      <div class="loader-bar"><div id="loader-fill" class="loader-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- APP: SPLIT LAYOUT -->
+  <div id="app" class="app hidden">
+
+    <!-- ═══ LEFT PANEL — Camera + Hand Tracking ═══ -->
+    <div class="cam-panel">
+      <video id="webcam" autoplay playsinline muted></video>
+      <canvas id="hud"></canvas>
+
+      <!-- Gesture badge -->
+      <div id="gesture-badge" class="gesture-badge">✋ SHOW BOTH HANDS</div>
+
+      <!-- Telemetry strip -->
+      <div class="telem-row">
+        <div class="telem-item">
+          <span class="telem-label">ANGLE</span>
+          <span id="telem-angle" class="telem-value accent">+0.0°</span>
+        </div>
+        <div class="telem-item">
+          <span class="telem-label">FPS</span>
+          <span id="fps-badge" class="telem-value green">--</span>
+        </div>
+        <div class="telem-item">
+          <span class="telem-label">MODE</span>
+          <span id="status-badge" class="telem-value">● ACTIVE</span>
+        </div>
+      </div>
+
+      <!-- Key indicators -->
+      <div class="key-row">
+        <div id="key-left"  class="key-btn">◄ LEFT</div>
+        <div id="key-gas"   class="key-btn">▲ GAS</div>
+        <div id="key-brake" class="key-btn">▼ BRAKE</div>
+        <div id="key-right" class="key-btn">RIGHT ►</div>
+      </div>
+
+      <!-- Settings toggle -->
+      <button id="btn-settings" class="cam-settings-btn" title="Settings">⚙</button>
+
+      <!-- Settings panel -->
+      <div id="settings-panel" class="settings-panel hidden">
+        <h3>⚙ Settings</h3>
+        <label>Steer Threshold: <span id="thresh-val">15</span>°
+          <input type="range" id="thresh-slider" min="5" max="45" value="15" />
+        </label>
+        <label>Smoothing: <span id="smooth-val">0.25</span>
+          <input type="range" id="smooth-slider" min="5" max="80" value="25" />
+        </label>
+        <label>Camera:
+          <select id="camera-select"></select>
+        </label>
+        <button id="btn-close-settings">✕ Close</button>
+      </div>
+    </div>
+
+    <!-- ═══ RIGHT PANEL — Embedded Racing Game ═══ -->
+    <div class="game-panel">
+      <canvas id="game"></canvas>
+
+      <!-- Game header -->
+      <div class="game-header">
+        <span class="game-title">🏎 RACE</span>
+        <span id="game-score" class="game-stat">SCORE: 0</span>
+        <span id="game-speed-display" class="game-stat accent">200 km/h</span>
+        <span id="game-lives" class="game-stat red">♥ ♥ ♥</span>
+      </div>
+
+      <!-- Hint bar -->
+      <div class="game-hint">
+        ✊ Fists = Gas &nbsp;|&nbsp; 🖐 Open = Brake &nbsp;|&nbsp; ↙↘ Tilt = Steer
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
